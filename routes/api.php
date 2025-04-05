@@ -24,3 +24,4 @@ Route::delete('/dequeue', [QueueController::class, 'dequeue'])->name('dequeue');
 Route::get('/front', [QueueController::class, 'front'])->name('front');
 Route::get('/peek', [QueueController::class, 'peek'])->name('peek');
 Route::get('/rear', [QueueController::class, 'rear'])->name('rear');
+Route::get('/is-empty', [QueueController::class, 'isEmpty'])->name('isEmpty');

@@ -95,6 +95,18 @@ class QueueController extends Controller
     }
 
     /**
+     * Check if the queue is empty
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function isEmpty()
+    {
+        return response()->json([
+            'is-empty' => !$this->getFirstJob() ? true : false
+        ], 200);
+    }
+
+    /**
      * Retrieves the first job from the queue
      *
      * @return \Illuminate\Contracts\Queue\Job|null|array
