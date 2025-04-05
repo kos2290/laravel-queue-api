@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/enqueue', [QueueController::class, 'enqueue'])->name('enqueue');
+Route::delete('/dequeue', [QueueController::class, 'dequeue'])->name('dequeue');
