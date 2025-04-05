@@ -13,4 +13,5 @@ Simple example of using queues via API in Laravel
 ## Usage (api endpoints)
 
 - Add a new item to the queue (an "x" parameter is required): `POST http://localhost:8080/api/enqueue`
-- Deletes and returns the first element from the queue (if found) `DELETE http://localhost:8080/api/dequeue`
+- Delete and return the first element in the queue (if found): `DELETE http://localhost:8080/api/dequeue`
+- Get the first item in the queue without deleting it: `GET http://localhost:8080/api/front` or `GET http://localhost:8080/api/peek`
