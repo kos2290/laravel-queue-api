@@ -101,9 +101,17 @@ class QueueController extends Controller
      */
     public function isEmpty()
     {
-        return response()->json([
-            'is-empty' => !$this->getFirstJob() ? true : false
-        ], 200);
+        return response()->json(['is-empty' => !Queue::size() ? true : false], 200);
+    }
+
+    /**
+     * Returns the size of the queue
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function size()
+    {
+        return response()->json(['size' => Queue::size()], 200);
     }
 
     /**
