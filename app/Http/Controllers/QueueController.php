@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Validator;
+use InvalidArgumentException;
 
 class QueueController extends Controller
 {
@@ -44,11 +45,7 @@ class QueueController extends Controller
             // Remove item from queue
             $firstJob->delete();
 
-            return response()->json([
-                'message' => 'Item is removed from the queue',
-                'job'     => $payload['job'],
-                'data'    => $payload['data'],
-            ], 200);
+            return response()->json(['x' => $payload['x']], 200);
         } else {
             return response()->json(['message' => 'The queue is empty'], 204);
         }
@@ -64,11 +61,7 @@ class QueueController extends Controller
         if ($firstJob = $this->getFirstJob()) {
             $payload  = $this->getJobPayload($firstJob);
 
-            return response()->json([
-                'message' => 'Item is retrieved from the queue',
-                'job'     => $payload['job'],
-                'data'    => $payload['data'],
-            ], 200);
+            return response()->json(['x' => $payload['x']], 200);
         } else {
             return response()->json(['message' => 'The queue is empty'], 204);
         }
@@ -86,12 +79,32 @@ class QueueController extends Controller
     }
 
     /**
+     * Get the last element from the queue (if found)
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function rear()
+    {
+        if ($firstJob = $this->getFirstJob(false, 'desc')) {
+            $payload  = $this->getJobPayload($firstJob);
+
+            return response()->json(['x' => $payload['x']], 200);
+        } else {
+            return response()->json(['message' => 'The queue is empty'], 204);
+        }
+    }
+
+    /**
      * Retrieves the first job from the queue
      *
      * @return \Illuminate\Contracts\Queue\Job|null|array
      */
-    private function getFirstJob(bool $retrieveAndRemove = false)
+    private function getFirstJob(bool $retrieveAndRemove = false, string $orderBy = 'asc')
     {
+        if (!in_array($orderBy, ['asc', 'desc'])) {
+            throw new InvalidArgumentException("Order by must be either 'asc' or 'desc'");
+        }
+
         $connection = config('queue.default');
 
         if ($retrieveAndRemove) {
@@ -102,7 +115,7 @@ class QueueController extends Controller
 
             $firstJob = (array) DB::table($table)
                 ->where('queue', $queueName)
-                ->orderBy('id', 'asc')
+                ->orderBy('id', $orderBy)
                 ->lockForUpdate() // Prevent another worker from processing while we're watching
                 ->first();
         }
@@ -126,6 +139,12 @@ class QueueController extends Controller
 
         $payload['job']  = $payload['job'] ?? null;
         $payload['data'] = $payload['data'] ?? [];
+
+        if ($payload['data']['command']) {
+            $payload['data'] = unserialize($payload['data']['command']);
+            $payload['x']    = $payload['data']->getData();
+            unset($payload['data']);
+        }
 
         return $payload;
     }

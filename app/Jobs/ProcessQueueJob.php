@@ -31,4 +31,14 @@ class ProcessQueueJob implements ShouldQueue
     {
         Log::info("Item from queue successfully processed: {$this->data}");
     }
+
+    /**
+     * Retrieve the data associated with this job.
+     *
+     * @return mixed The data passed to the job.
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
 }
