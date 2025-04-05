@@ -17,3 +17,4 @@ Simple example of using queues via API in Laravel
 - Get the first item in the queue without deleting it: `GET http://localhost:8080/api/front` or `GET http://localhost:8080/api/peek`
 - Get the last item in the queue without deleting it: `GET http://localhost:8080/api/rear`
 - Check if the queue is empty `GET http://localhost:8080/api/is-empty`
+- Get the size of the queue `GET http://localhost:8080/api/size`
