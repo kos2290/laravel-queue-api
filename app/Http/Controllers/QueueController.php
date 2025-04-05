@@ -29,7 +29,7 @@ class QueueController extends Controller
         // Send job in queue
         ProcessQueueJob::dispatch($request->x);
 
-        return response()->json(['message' => 'Item "x" added in queue'], 202);
+        return response()->json(['message' => "Item '{$request->x}' added in queue"], 202);
     }
 
     /**
