@@ -13,6 +13,7 @@ class ProcessQueueJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** @var mixed */
     private $data;
 
     /**

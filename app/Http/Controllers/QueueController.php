@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use Illuminate\Http\JsonResponse;
 
 class QueueController extends Controller
 {
@@ -18,7 +19,7 @@ class QueueController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function enqueue(Request $request)
+    public function enqueue(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), ['x' => 'required']);
 
@@ -37,7 +38,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function dequeue()
+    public function dequeue(): JsonResponse
     {
         if ($firstJob = $this->getFirstJob(true)) {
             $payload  = $this->getJobPayload($firstJob);
@@ -56,7 +57,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function front()
+    public function front(): JsonResponse
     {
         if ($firstJob = $this->getFirstJob()) {
             $payload  = $this->getJobPayload($firstJob);
@@ -73,7 +74,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function peek()
+    public function peek(): JsonResponse
     {
         return $this->front();
     }
@@ -83,7 +84,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function rear()
+    public function rear(): JsonResponse
     {
         if ($firstJob = $this->getFirstJob(false, 'desc')) {
             $payload  = $this->getJobPayload($firstJob);
@@ -99,7 +100,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function isEmpty()
+    public function isEmpty(): JsonResponse
     {
         return response()->json(['is-empty' => !Queue::size() ? true : false], 200);
     }
@@ -109,7 +110,7 @@ class QueueController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function size()
+    public function size(): JsonResponse
     {
         return response()->json(['size' => Queue::size()], 200);
     }
@@ -117,9 +118,12 @@ class QueueController extends Controller
     /**
      * Retrieves the first job from the queue
      *
+     * @param bool $retrieveAndRemove
+     * @param string $orderBy
+     *
      * @return \Illuminate\Contracts\Queue\Job|null|array
      */
-    private function getFirstJob(bool $retrieveAndRemove = false, string $orderBy = 'asc')
+    private function getFirstJob(bool $retrieveAndRemove = false, string $orderBy = 'asc'): Job|array|null
     {
         if (!in_array($orderBy, ['asc', 'desc'])) {
             throw new InvalidArgumentException("Order by must be either 'asc' or 'desc'");
@@ -147,9 +151,9 @@ class QueueController extends Controller
      * Retrieves the payload of a job
      *
      * @param \Illuminate\Contracts\Queue\Job|array $job
-     * @return array<string, mixed>
+     * @return array
      */
-    private function getJobPayload($job)
+    private function getJobPayload(Job|array|null $job): array
     {
         if (!$job) {
             return [];
